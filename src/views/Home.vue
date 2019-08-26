@@ -3,17 +3,19 @@
         <el-container style="height: 100vh">
             <el-header class="headerStyle">
                 <div class="headerBox">
-                    <span class="logoName">聚通达运营管理平台</span>
-                    <p class="account">
-                        <el-col>
-                            <el-dropdown @command="signOut">
-                                <span class="el-dropdown-link">{{account}}<i class="el-icon-arrow-down el-icon--right"></i></span>
-                                <el-dropdown-menu slot="dropdown">
-                                    <el-dropdown-item icon="el-icon-switch-button">退出</el-dropdown-item>
-                                </el-dropdown-menu>
-                            </el-dropdown>
-                        </el-col>
-                    </p>
+                    <span class="logoName web-font">聚通达运营管理平台</span>
+                    <div class="account">
+                        <el-popover popper-class="userStyle" placement="bottom-end" width="200" trigger="click" @show="show" @hide="hide">
+                            <p class="accountStyle">{{account}}</p>
+                            <p class="mobileStyle">{{mobile}}</p>
+                            <p class="line"></p>
+                            <p class="loginOutStyle" @click="signOut">退出</p>
+                            <el-button id="accountName" type="primary" slot="reference">
+                                <i v-if="upIcon" class="el-icon-arrow-down el-icon--right"></i>
+                                <i v-if="!upIcon" class="el-icon-arrow-up el-icon--right"></i>
+                            </el-button>
+                        </el-popover>
+                    </div>
                     <span class="accountImg"> <el-avatar src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png"></el-avatar></span>
                 </div>
             </el-header>
@@ -24,32 +26,10 @@
                     </span>
                 </p>
                 <el-aside id="aside" :width="asideWidth" >
-                    <el-menu :collapse-transition="false" router default-active="/role/Index" class="el-menu-vertical-demo" @open="handleOpen" @close="handleClose" :collapse="isCollapse" background-color="#fafafa">
-                        <!--<el-menu-item index="/role/index" @click="">-->
-                            <!--<i class="el-icon-user"></i>-->
-                            <!--<span slot="title">角色管理</span>-->
-                        <!--</el-menu-item>-->
-                        <!--<el-submenu index="/role/Index">-->
-                            <!--<template slot="title">-->
-                                <!--<i class="el-icon-user"></i>-->
-                                <!--<span slot="title">角色管理</span>-->
-                            <!--</template>-->
-                            <!--<el-menu-item-group>-->
-                                <!--<el-menu-item index="1-1">选项1</el-menu-item>-->
-                                <!--<el-menu-item index="1-2">选项2</el-menu-item>-->
-                            <!--</el-menu-item-group>-->
-                        <!--</el-submenu>-->
-                        <el-menu-item index="/role/Index">
+                    <el-menu :collapse-transition="false" :default-active="activeIndex" router class="el-menu-vertical-demo" @open="handleOpen" @close="handleClose" :collapse="isCollapse" background-color="#fafafa">
+                        <el-menu-item v-for="(item,index) in navMenuList" :index="item.menuUrl">
                             <i class="el-icon-user"></i>
-                            <span slot="title">角色管理</span>
-                        </el-menu-item>
-                        <el-menu-item index="/account/Index">
-                            <i class="el-icon-user"></i>
-                            <span slot="title">账户管理</span>
-                        </el-menu-item>
-                        <el-menu-item index="/function/Index">
-                            <i class="el-icon-user"></i>
-                            <span slot="title">系统功能管理</span>
+                            <span slot="title" class="web-font">{{item.label}}</span>
                         </el-menu-item>
                     </el-menu>
                 </el-aside>
@@ -62,10 +42,13 @@
     export default {
         data() {
             return {
-                account:"管理员",
+                account:this.$store.state.userName||JSON.parse(sessionStorage.getItem("userFullName")),
+                mobile:this.$store.state.mobile||JSON.parse(sessionStorage.getItem("mobile")),
                 isCollapse: false,
                 asideWidth:"200px",
                 isRetract:true,
+                navMenuList:[],
+                upIcon:true,
             };
         },
         methods: {
@@ -92,19 +75,56 @@
                     this.asideWidth="200px";
                     this.isRetract=true;
                 }
+            },
+            //显示
+            show(){
+                this.upIcon=false
+            },
+            hide(){
+                this.upIcon=true;
             }
         },
         mounted() {
-
+           this.navMenuList=JSON.parse(sessionStorage.getItem("getNaviMenuList"));
+           //监听页面刷新事件
+            window.onbeforeunload = function (e) {
+                e = e || window.event;
+                // 兼容IE8和Firefox 4之前的版本
+                if (e) {
+                    e.returnValue = '关闭提示';
+                }
+                // Chrome, Safari, Firefox 4+, Opera 12+ , IE 9+
+                this.account = this.$store.state.userName || JSON.parse(sessionStorage.getItem("userFullName"));
+                this.mobile = this.$store.state.mobile || JSON.parse(sessionStorage.getItem("mobile"));
+                return '关闭提示';
+            };
         },
         watch: {
             $route() {
-                if (this.$route.meta.parentPath) {
-                    console.log(this.$route.meta.parentPath);
-                    this.pagedefault = this.$route.meta.parentPath; // 实现路由切换
+                if(this.$router.path==="/role/Index"||this.$router.path==="/role/RoleUser"||this.$router.path==="/role/PermissionConfiguration"){
+                    return "/role/Index";
+                }else if(this.$router.path==='/account/Index'||this.$router.path==='/account/PermissionConfiguration'){
+                    return "/account/Index";
+                }else if(this.$router.path==='/function/Index'){
+                    return "/function/Index";
+                }else {
+                    return this.$route.path;
                 }
             }
-        }
+        },
+        computed:{
+            activeIndex(){
+                if(this.$route.path==="/role/Index"||this.$route.path==="/role/RoleUser"||this.$route.path==="/role/PermissionConfiguration"){
+                    return "/role/Index";
+                }else if(this.$route.path==='/account/Index'||this.$route.path==='/account/PermissionConfiguration'){
+                    return "/account/Index";
+                }else if(this.$route.path==='/function/Index'){
+                    return "/function/Index";
+                }else {
+                    return this.$route.path;
+                }
+            }
+        },
     }
 </script>
 <style lang="less" scoped>
@@ -151,7 +171,7 @@
             height: 40px;
             line-height: 40px;
             float: right;
-            margin-right: 10px;
+            margin-right: -16px;
             .el-avatar{
                 margin-top: 5px;
             }
@@ -163,10 +183,11 @@
             color: #ffffff;
             font-size: 16px;
             margin: 0;
-            margin-right: 15px;
+            margin-right: 16px;
             cursor: pointer;
             .el-dropdown-link{
                 color: #ffffff;
+                font-family:"webfont" !important;
             }
             .el-dropdown-link:hover{
                 color: #b9f0ff;
@@ -268,5 +289,48 @@
     }
     #home .el-menu .is-active span,.el-menu-item.is-active span{
         color:#fff;
+    }
+    #home #accountName{
+        background-color: #578ebe;
+        border-color: #578ebe;
+        .el-button--primary{
+            border-color: #578ebe;
+        }
+    }
+</style>
+<style>
+    .userStyle{
+        padding: 0;
+    }
+    .userStyle .accountStyle{
+        cursor: pointer;
+        margin: 15px 10px 5px 10px;
+        font-weight: bold;
+        font-family:"webfont"
+    }
+    .userStyle .loginOutStyle:hover{
+        background-color: #eee;
+    }
+    .userStyle .mobileStyle{
+        cursor: pointer;
+        margin: 0 10px 10px 10px;
+        font-weight: normal;
+        font-family:"webfont";
+        font-size: 14px;
+    }
+    .userStyle .loginOutStyle{
+        cursor: pointer;
+        padding: 8px 12px;
+        text-indent: 2px;
+        margin: 4px 0 8px 0;
+        font-weight: normal;
+        font-family:"webfont";
+        font-size: 14px;
+    }
+    .userStyle .line{
+        height: 1px;
+        width: 100%;
+        background-color: #dfdfdf;
+        margin: 0;
     }
 </style>

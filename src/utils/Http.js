@@ -13,7 +13,6 @@ console.log("process.env.API_HOST:" + process.env.API_HOST)
 axios.interceptors.request.use((config) => {
         const token = new Vue().$cookie.get('loginToken');
         config.headers.common['loginToken'] = token;
-        console.log(token);
         return config
     }, (error) => {
         console.log(error)

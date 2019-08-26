@@ -1,4 +1,3 @@
-console.log(process.env.VUE_APP_HOST_URL)
 module.exports = {
     // 基本路径
     publicPath: process.env.NODE_ENV === "production" ? "./" : "./",
@@ -57,8 +56,8 @@ module.exports = {
         open: true,
         hotOnly: false,
         proxy: {
-            '/api': {
-                target: 'http://49.4.68.114:7080/bop_test/', // 接口
+            '/apis': {
+                target: 'http://192.168.3.46:7900', // 接口
                 changeOrigin: true, //是否跨域
                 pathRewrite: {
                     '^/apis': '' //需要rewrite重写的

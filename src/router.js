@@ -40,6 +40,12 @@ const router = new Router({
                     component: resolve => require(['./views/RolelManage/RoleUser.vue'], resolve)
                 },
                 {
+                    path: "/role/PermissionConfiguration",
+                    name: "权限配置",
+                    meta: {title: 'PermissionConfiguration'},
+                    component: resolve => require(['./views/RolelManage/PermissionConfiguration.vue'], resolve)
+                },
+                {
                     path: "/account/Index",
                     name: "账户管理",
                     meta: {title: 'Index'},
@@ -49,6 +55,12 @@ const router = new Router({
                     name: "账户详情",
                     meta: {title: 'Detail'},
                     component: resolve => require(['./views/AccountIManage/Detail.vue'], resolve)
+                },
+                {
+                    path: "/account/PermissionConfiguration",
+                    name: "权限配置",
+                    meta: {title: 'PermissionConfiguration'},
+                    component: resolve => require(['./views/AccountIManage/PermissionConfiguration.vue'], resolve)
                 },
                 {
                     path: "/function/Index",
@@ -76,7 +88,6 @@ const router = new Router({
             meta: {title: 'notfound'},
             component: resolve => require(['./components/404'], resolve)
         }
-
     ]
 });
 router.beforeEach((to, from, next) => {

@@ -39,7 +39,17 @@ body,html{ padding: 0; margin:0;height: 100%;width: 100% }
 }
 .web-font{
     font-family:"webfont" !important;
-    font-size:16px;font-style:normal;
+    font-size:13px;font-style:normal;
+    -webkit-font-smoothing: antialiased;
+    -webkit-text-stroke-width: 0.2px;
+    -moz-osx-font-smoothing: grayscale;
+}
+#functionContent .el-dialog{
+    width: 600px !important;
+}
+.el-table .cell{
+    font-family:"webfont" !important;
+    font-size:13px;font-style:normal;
     -webkit-font-smoothing: antialiased;
     -webkit-text-stroke-width: 0.2px;
     -moz-osx-font-smoothing: grayscale;

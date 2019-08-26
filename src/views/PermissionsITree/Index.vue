@@ -86,7 +86,7 @@
 
 <style lang="less" scoped>
     #perContent{
-        height: 100%;
+        height: calc(100% - 20px);
         padding: 20px 0 0 20px;
         background-color: #fff;
     }
